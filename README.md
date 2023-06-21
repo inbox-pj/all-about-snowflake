@@ -44,6 +44,7 @@ COPY INTO LOAN_PAYMENT
 
 
 
+
 -- Validate Data
 
 CREATE OR REPLACE TABLE save_copy_errors AS SELECT * FROM TABLE(VALIDATE(LOAN_PAYMENT, JOB_ID=>'<query_id>'));
@@ -54,6 +55,21 @@ REMOVE@my_csv_stagePATTERN='.*.csv.gz';
 
 DROP DATABASE IF EXISTS mydatabase;
 DROP WAREHOUSE IF EXISTS mywarehouse;
+
+-- Transformation
+COPY INTO OUR_FIRST_DB.PUBLIC.ORDERS_EX
+    FROM (select 
+            s.$1,
+            s.$2, 
+            s.$3,
+	    CASE WHEN CAST(s.$3 as int) < 0 THEN 'not profitable' ELSE 'profitable' END ,
+            substring(s.$5,1,5) 
+          from @MANAGE_DB.external_stages.aws_stage s)
+    file_format= (type = csv field_delimiter=',' skip_header=1)
+    files=('OrderDetails.csv');
+
+
+
 
 ```
 
