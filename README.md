@@ -70,7 +70,15 @@ COPY INTO OUR_FIRST_DB.PUBLIC.ORDERS_EX
     files=('OrderDetails.csv');
 
 
+-- Using subset of columns
 
+COPY INTO OUR_FIRST_DB.PUBLIC.ORDERS_EX (ORDER_ID,PROFIT)
+    FROM (select 
+            s.$1,
+            s.$3
+          from @MANAGE_DB.external_stages.aws_stage s)
+    file_format= (type = csv field_delimiter=',' skip_header=1)
+    files=('OrderDetails.csv');
 
 ```
 
