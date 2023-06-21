@@ -21,6 +21,7 @@ ALTER DATABASE <old_database_name> RENAME to <new_database_name>
 CREATE DATABASE OUR_FIRST_DB
 
 CREATE TABLE "OUR_FIRST_DB"."PUBLIC"."LOAN_PAYMENT" (
+   PK number autoincrement start 1 increment 1,
   "Loan_ID" STRING,
   "loan_status" STRING,
   "Principal" STRING,
