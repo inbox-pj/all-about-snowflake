@@ -58,6 +58,14 @@ REMOVE@my_csv_stagePATTERN='.*.csv.gz';
 DROP DATABASE IF EXISTS mydatabase;
 DROP WAREHOUSE IF EXISTS mywarehouse;
 
+COPY INTO OUR_FIRST_DB.PUBLIC.ORDERS_EX
+    FROM @MANAGE_DB.external_stages.aws_stage s
+    file_format= (type = csv field_delimiter=',' skip_header=1)
+    files=('OrderDetails.csv')
+    VALIDATION_MODE = RETURN_ERRORS | RETURN_n_ROWS;   -- Validate the data instead of loading them
+
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Transformation
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -220,11 +228,10 @@ file_format = (type = csv
                    skip_header=1)
 	       --files = ('OrderDetails.csv')
 	       --pattern='.*Order.*'
---VALIDATION_MODE = RETURN_ERRORS | RETURN_n_ROWS;   
+ 
 
 
 
 ```
 
-<img width="1060" alt="image" src="https://github.com/inbox-pj/snowflake-all-in-one/assets/53929164/ea4a7479-7b18-479e-9f76-c20c4b96a554">
 
