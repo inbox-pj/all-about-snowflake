@@ -1,21 +1,17 @@
 1. Create a table called employees with the following columns and data types:
-  customer_id int,
-  first_name varchar(50),
-  last_name varchar(50),
-  email varchar(50),
-  age int,
-  department varchar(50)
-
-2. Create a stage object pointing to 's3://snowflake-assignments-mc/copyoptions/example1'
-
-3. Create a file format object with the specification
-TYPE = CSV
-FIELD_DELIMITER=','
-SKIP_HEADER=1;
-
-4. Use the copy option to only validate if there are errors and if yes what errors.
-
-5. Load the data anyways regardless of the error using the ON_ERROR option. How many rows have been loaded?
+    - customer_id int,
+    - first_name varchar(50),
+    - last_name varchar(50),
+    - email varchar(50),
+    - age int,
+    - department varchar(50)
+3. Create a stage object pointing to 's3://snowflake-assignments-mc/copyoptions/example1'
+4. Create a file format object with the specification
+    - TYPE = CSV
+    - FIELD_DELIMITER=','
+    - SKIP_HEADER=1;
+5. Use the copy option to only validate if there are errors and if yes what errors.
+6. Load the data anyways regardless of the error using the ON_ERROR option. How many rows have been loaded?
 
 
 
@@ -102,3 +98,138 @@ SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.LOAD_HISTORY;
 
 
 =============================================================================
+
+
+
+1. Create a stage object that is pointing to 's3://snowflake-assignments-mc/unstructureddata/'
+2. Create a file format object that is using TYPE = JSON
+3. Create a table called JSON_RAW with one column
+    - Column name: Raw
+    - Column type: Variant
+4. Copy the raw data in the JSON_RAW table using the file format object and stage object
+5. Select the below attributes and query these columns-
+    - first_name
+    - last_name
+    - skills
+6. The skills column contains an array. Query the first two values in the skills attribute for every record in a separate column:
+    - first_name
+    - last_name
+    - skills_1
+    - skills_2
+7. Create a table and insert the data for these 4 columns in that table.
+
+
+```sql
+create or replace database EXERCISE_DB;
+
+create or replace schema EXERCISE_DB.EXERCISE_SCHEMA;
+
+create or replace stage EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_STAGE
+url = 's3://snowflake-assignments-mc/unstructureddata/';
+
+
+list @EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_STAGE;
+
+desc stage EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_STAGE;
+
+create or replace file format EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_FILE_FORMAT_SCHEMA
+type=JSON;
+
+desc file format EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_FILE_FORMAT_SCHEMA;
+
+
+create or replace table EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW (
+raw variant
+);
+
+
+select * from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW;
+
+copy into EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW
+from @EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_STAGE
+file_format = EXERCISE_DB.EXERCISE_SCHEMA.EXERCISE_FILE_FORMAT_SCHEMA;
+
+
+select 
+$1:id::int as id,
+$1:first_name::varchar as first_name,
+$1:last_name::varchar as last_name,
+$1:age::int as age,
+$1:department::varchar as department,
+raw:Skills::STRING as Skills
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW;
+
+
+select 
+$1:id::int as id,
+$1:first_name::varchar as first_name,
+$1:last_name::varchar as last_name,
+$1:age::int as age,
+$1:department::varchar as department,
+raw:Skills[0]::STRING as Skills
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW
+UNION ALL
+select 
+$1:id::int as id,
+$1:first_name::varchar as first_name,
+$1:last_name::varchar as last_name,
+$1:age::int as age,
+$1:department::varchar as department,
+raw:Skills[1]::STRING as Skills
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW
+order by id;
+
+select $1:id::int as id, array_size(raw:Skills) from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW order by id asc;
+
+
+select 
+$1:id::int as id,
+$1:first_name::varchar as first_name,
+$1:last_name::varchar as last_name,
+$1:age::int as age,
+$1:department::varchar as department,
+raw:Skills[0]::STRING as Skills1,
+raw:Skills[1]::STRING as Skills2
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW;
+
+select 
+raw:id::int as id,
+raw:first_name::varchar as first_name,
+raw:last_name::varchar as last_name,
+raw:age::int as age,
+raw:department::varchar as department,
+f.value as skills
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW, table(flatten(raw:Skills)) f
+order by id asc;
+
+
+select f.* from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW, table(flatten(raw:Skills)) f;
+
+create or replace table skills_set as
+select raw:id::int as id,
+raw:first_name::varchar as first_name,
+raw:last_name::varchar as last_name,
+raw:age::int as age,
+raw:department::varchar as department,
+f.value as skills
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW, table(flatten(raw:Skills)) f
+order by id asc;
+
+
+create or replace table skills_set as
+select 
+$1:id::int as id,
+$1:first_name::varchar as first_name,
+$1:last_name::varchar as last_name,
+$1:age::int as age,
+$1:department::varchar as department,
+raw:Skills[0]::STRING as Skills1,
+raw:Skills[1]::STRING as Skills2,
+raw:Skills[2]::STRING as Skills3
+from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW
+order by id asc;
+
+select * from skills_set;
+
+select skills1 from skills_set where first_name='Florina';
+```
