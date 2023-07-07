@@ -56,30 +56,71 @@ DROP WAREHOUSE IF EXISTS EDW_WH;
 -- Cloud Integration - GCP
 --=================================================================
 
---create integration object
-CREATE STORAGE INTEGRATION gcp_integration
-  TYPE = EXTERNAL_STAGE
-  STORAGE_PROVIDER = GCS
-  ENABLED = TRUE
-  STORAGE_ALLOWED_LOCATIONS = ('gcs://bucket/path', 'gcs://bucket/path2');
+    CREATE OR REPLACE DATABASE GCP_INTEGRATION_DB;
 
-ALTER STORAGE INTEGRATION gcp_integration
-  SET
-  STORAGE_ALLOWED_LOCATIONS = ('gcs://bucket/path0', 'gcs://bucket/path1');
+    CREATE OR REPLACE SCHEMA GCP_INTEGRATION_DB.GCP;
 
--- Describe integration object to provide access
-DESC STORAGE integration gcp_integration;
+    CREATE OR REPLACE STORAGE INTEGRATION GCP_INTEGRATION
+        TYPE=EXTERNAL_STAGE
+        STORAGE_PROVIDER = GCS
+        ENABLED = TRUE
+        STORAGE_ALLOWED_LOCATIONS = ('gcs://pjaiswal-snowflake-bucket-gcp/3/csv/');
+
+    DESC STORAGE INTEGRATION GCP_INTEGRATION;
+
+    ---
+    -- Take STORAGE_GCP_SERVICE_ACCOUNT
+    -- In GCP IAM, Create Role and for bucket, allow principle to this role with STORAGE_GCP_SERVICE_ACCOUNT
+    ---
+
+    CREATE OR REPLACE FILE FORMAT GCP_INTEGRATION_DB.GCP.GCP_FILE_FORMAT
+        TYPE='CSV'
+        FIELD_DELIMITER=',',
+        SKIP_HEADER=1;
+        
+    
+    CREATE OR REPLACE STAGE GCP_INTEGRATION_STAGE_LOAD
+      URL = 'gcs://pjaiswal-snowflake-bucket-gcp/3/csv/'
+      STORAGE_INTEGRATION = GCP_INTEGRATION
+      FILE_FORMAT = GCP_INTEGRATION_DB.GCP.GCP_FILE_FORMAT;
+
+    LIST @GCP_INTEGRATION_STAGE_LOAD;
+
+    
+    CREATE OR REPLACE TABLE EMPLOYEE (
+        customer_id integer,
+        first_name varchar(50),
+        last_name varchar(50),
+        email varchar(50),
+        location varchar(50),
+        department varchar(50)
+    );
+
+    COPY INTO EMPLOYEE
+    FROM @GCP_INTEGRATION_STAGE_LOAD
+    FILE_FORMAT = GCP_INTEGRATION_DB.GCP.GCP_FILE_FORMAT
+    files=('employee_data_1.csv')
+    VALIDATION_MODE=RETURN_ERRORS;
+
+    COPY INTO EMPLOYEE
+    FROM @GCP_INTEGRATION_STAGE_LOAD
+    FILE_FORMAT = GCP_INTEGRATION_DB.GCP.GCP_FILE_FORMAT
+    files=('employee_data_1.csv')
+    ON_ERROR=SKIP_FILE
+    TRUNCATECOLUMNS=TRUE;
+
+    SELECT * FROM EMPLOYEE;
+    
+    
+    CREATE OR REPLACE STAGE GCP_INTEGRATION_STAGE_UNLOAD
+      URL = 'gcs://pjaiswal-snowflake-bucket-gcp/3/csv/unload'
+      STORAGE_INTEGRATION = GCP_INTEGRATION
+      FILE_FORMAT = (TYPE='CSV' FIELD_DELIMITER=',' SKIP_HEADER=0);
+
+    COPY INTO @GCP_INTEGRATION_STAGE_UNLOAD FROM EMPLOYEE;
 
 
---Unload data from Snoflake to GCP
--- create stage object
-create or replace stage demo_db.public.stage_gcp
-    STORAGE_INTEGRATION = gcp_integration
-    URL = 'gcs://bucket/<new_unload_path>'
-    FILE_FORMAT = fileformat_gcp
-    ;
-
-COPY INTO @stage_gcp FROM <table_name>;
+    
 
 ```
 
