@@ -1,9 +1,9 @@
 ## Snowpipe Setup Stages
 - Create Table
     - Create Storage Integration
-        - Create Stage
-            - Create Pipe
-                - Setup Notification
+        - Create Notification Integration
+            - Create Stage
+                - Create Pipe
 
 ```sql
 -----------------------------------------------------------------
