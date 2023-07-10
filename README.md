@@ -142,4 +142,22 @@ file_format = (type = csv
 
 ```
 
+# Zero Copy Cloning and Swapping Tables
+
+```sql
+
+Create <<Storage_Object>> <<Target_Object_Name>>
+CLONE <<SOURCE_Object_Name>>
+--before (statement => '<your-query-id>')
+--at (OFFSET => <offset>)
+--before (timestamp => '<timestamp>')
+
+
+ALTER TABLE <<Target_Name>>
+SWAP WITH <<SOURCE_Name>>
+--before (statement => '<your-query-id>')
+--at (OFFSET => <offset>)
+--before (timestamp => '<timestamp>')
+```
+
 
