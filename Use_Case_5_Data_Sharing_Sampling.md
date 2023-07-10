@@ -56,7 +56,9 @@ GRANT SELECT ON VIEW DATA_S.PUBLIC.ORDERS_VIEW_SECURE TO ROLE PUBLIC;
 
 
 -- Grant select on view
+--A view can only be shared if it is created as a SECURE view, or marked SECURE using ALTER VIEW CUSTOMER_VIEW SET SECURE.
 GRANT SELECT ON VIEW  DATA_S.PUBLIC.ORDERS_VIEW TO SHARE ORDERS_SHARE;
+-- SECURE View Grant
 GRANT SELECT ON VIEW  DATA_S.PUBLIC.ORDERS_VIEW_SECURE TO SHARE ORDERS_SHARE;
 
 
@@ -76,7 +78,7 @@ ALTER SHARE ORDERS_SHARE ADD ACCOUNT=<consumer-account-id>;
 SHOW SHARES;
 
 -- See details on Share
-DESC <producer-account-id>.ORDERS_SHARE;
+DESC SHARE <producer-account-id>.ORDERS_SHARE;
 
 
 -- Create a database in Consumer using share
@@ -121,6 +123,12 @@ GRANT USAGE ON WAREHOUSE READ_WH TO ROLE PUBLIC;
 
 -- Grating privileges on a Shared Database for other users
 GRANT IMPORTED PRIVILEGES ON DATABASE DATA_SHARE_DB TO REOLE PUBLIC;
+```
+
+```sql
+DROP SHARE SHARE_OJB;
+
+DROP MANAGED ACCOUNT pjaiswal_account;
 ```
 
 
