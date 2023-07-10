@@ -122,3 +122,6 @@ GRANT USAGE ON WAREHOUSE READ_WH TO ROLE PUBLIC;
 -- Grating privileges on a Shared Database for other users
 GRANT IMPORTED PRIVILEGES ON DATABASE DATA_SHARE_DB TO REOLE PUBLIC;
 ```
+
+
+## Data Sampling
