@@ -1,7 +1,7 @@
 ## Data Sharing
 
 
-### Share Data with Another Snowflake User
+### * Share Data with Another Snowflake User
 
 
 
@@ -87,7 +87,9 @@ SELECT * FROM DATA_S.PUBLIC.ORDERS;
 ```
 
 
-#### Share Data with Reader's Account
+###  * Share Data with Reader's Account
+
+#### On Producer Account Side
 ---------------------------
 ```sql
 -- Create Reader Account
