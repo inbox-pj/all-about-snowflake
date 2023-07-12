@@ -7,6 +7,7 @@
 -- CLUSTER Data
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Adding Cluster Key a.k.a Index
+
 CREATE TABLE <table_name> ... CLUSTER BY (COLUMN1, COLUMN2);
 
 CREATE TABLE <table_name> ... CLUSTER BY (Expressions);
@@ -14,6 +15,25 @@ CREATE TABLE <table_name> ... CLUSTER BY (Expressions);
 ALTER TABLE <table_name> CLUSTER BY ( COLUMN1 );
 
 ALTER TABLE <table_name> DROP CLUSTERING KEY
+
+-- Revised Clustering (Re-Organized Micro Partitions) after adding cluster key in table and data is already loaded into table before adding Cluster Key
+ALTER TABLE <table_name> RECLUSTER;
+
+-- Clustering and Micro-partition details
+SELECT SYSTEM$CLUSTERING_INFORMATION('<table_name>')
+SELECT SYSTEM$CLUSTERING_INFORMATION('<table_name>', '(<Cluster_Key_1>, <Cluster_Key_2>)')
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Cashing
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Remove caching 
+ALTER SESSION SET USE_CACHED_RESULT=FALSE; -- disable global caching
+
+-- Suspend/Resume Warehouse
+ALTER warehouse compute_wh suspend;
+ALTER warehouse compute_wh resume;
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Validate Data
