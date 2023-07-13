@@ -134,18 +134,6 @@ PUT file:///Users/pjaiswal/Downloads/202
                                         3-06-20-3_12pm.csv @my_csv_stage AUTO_CO
                                         MPRESS=TRUE;
 
--- Alter external stage   
-
-ALTER STAGE aws_stage
-    SET credentials=(aws_key_id='XYZ_DUMMY_ID' aws_secret_key='987xyz');
-
--- Publicly accessible staging area    
-
-CREATE OR REPLACE STAGE MANAGE_DB.external_stages.aws_stage
-    url='s3://bucketsnowflakes3';
-
-
-
 LIST @my_csv_stage;
 
 
