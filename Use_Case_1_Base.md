@@ -240,9 +240,18 @@ raw:first_name::varchar as first_name,
 raw:last_name::varchar as last_name,
 raw:age::int as age,
 raw:department::varchar as department,
-f.value as skills
+f.value.name as skills
 from EXERCISE_DB.EXERCISE_SCHEMA.JSON_RAW, table(flatten(raw:Skills)) f
 order by id asc;
+
+-- Parse array within array.
+
+select
+cl.value:cityName::string as city_name,
+yl.value::string as year_lived
+from json_demo,
+table(flatten(v:citiesLived)) cl,        -- Higher array
+table(flatten(cl.value:yearsLived)) yl;  -- Nested array
 
 
 create or replace table skills_set as
