@@ -97,7 +97,9 @@ ON_ERROR=CONTINUE
 SIZE_LIMIT=20000    -- size limit
 RETURN_FAILED_ONLY=TRUE    -- focus only on failed/partially loaded record, with ON_ERROR=CONTINUE only
 TRUNCATECOLUMNS=TRUE    -- truncate the value with defined column length, if exceeded
-FORCE=TRUE;    -- reload forcefullt even if file is loaded previously, even the files have not changed, may load to duplicate records
+FORCE=TRUE    -- reload forcefullt even if file is loaded previously, even the files have not changed, may load to duplicate records
+PURGE=TRUE;    -- deletes the files from staging once loaded into table
+
 
 SELECT rejected_record FROM TABLE(result_scan('01ad4fbc-0001-2a90-0002-1ac20002619a'));    -- associated with VALIDATION_MODE=RETURN_ERRORS
 
