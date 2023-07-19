@@ -6,9 +6,13 @@
   - download the ```snowflake-kafka-connector.jar``` and put inside ```/usr/local/opt/kafka/libexec/libs/```
   - update ```connect-standalone.properties``` with ```plugin.path=/usr/local/opt/kafka/libexec/libs/```
   - Create an unencrypted private key
-    > openssl genrsa -out rsa_key.pem 2048
+    ```shell
+    openssl genrsa -out rsa_key.pem 2048
+    ```
   - Create a public key referencing the above private key
-    > openssl rsa -in rsa_key.pem -pubout -out rsa_key.pub
+    ```shell
+      rsa -in rsa_key.pem -pubout -out rsa_key.pub
+    ```
   - Create and Update private key inside ```SF_connect.properties``` as ```snowflake.private.key``` [Snowflake Connector for Kafka](https://docs.snowflake.com/en/user-guide/kafka-connector)
     ```properties
       connector.class=com.snowflake.kafka.connector.SnowflakeSinkConnector
@@ -63,7 +67,7 @@
 
 ###  Delete a topic 
   ```shell
-    sh /usr/local/opt/kafka/bin/kafka-topics --bootstrap-server localhost:9092 --delete --topic test-data
+    sh /usr/local/opt/kafka/bin/kafka-topics --bootstrap-server localhost:9092 --delete --topic sales-data
   ```
 
  ###  list all topics 
