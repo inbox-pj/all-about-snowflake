@@ -34,6 +34,7 @@
     ```
     
 ## Kafka steps 
+- Create table ```sales_data``` in snowflake 
 - Start Zookeeper :
    ```shell
     sh /usr/local/opt/kafka/bin/zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties
