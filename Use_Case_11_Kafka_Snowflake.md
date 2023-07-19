@@ -50,6 +50,15 @@
   ```shell
     sh /usr/local/opt/kafka/bin/connect-standalone /usr/local/etc/kafka/connect-standalone.properties /usr/local/etc/kafka/SF_connect.properties
   ```
+- Post message into kafka topic
+  ```shell
+    sh /usr/local/opt/kafka/bin/kafka-console-producer -broker-list localhost:9092 -topic sales-data
+  ```
+- Retrieve Data in Snowflake
+  ```sql
+    SELECT RECORD_CONTENT:age::INT as age, RECORD_CONTENT:car::STRING as Car, RECORD_CONTENT:name::STRING as name
+    FROM DEMO_DB.PUBLIC.SALES_DATA;
+  ```
 
 ###  Delete a topic 
   ```shell
@@ -59,11 +68,6 @@
  ###  list all topics 
   ```shell
     sh /usr/local/opt/kafka/bin/kafka-topics --list --bootstrap-server localhost:9092
-  ```
-
- ### Post message into kafka topic
-  ```shell
-  sh /usr/local/opt/kafka/bin/kafka-console-producer -broker-list localhost:9092 -topic sales-data
   ```
 
 ### Read message from Kafka topic
