@@ -1,4 +1,4 @@
-# Kafka Connector with Snowflake 
+# Kafka Sink Connector with Snowflake 
 
 
 ## Pre-Requisit:
