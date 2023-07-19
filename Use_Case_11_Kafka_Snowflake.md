@@ -9,15 +9,15 @@
     > openssl genrsa -out rsa_key.pem 2048
   - Create a public key referencing the above private key
     > openssl rsa -in rsa_key.pem -pubout -out rsa_key.pub
-  - Create and Update private key inside ```SF_connect.properties``` as ```snowflake.private.key```
+  - Create and Update private key inside ```SF_connect.properties``` as ```snowflake.private.key```  (Ref: https://docs.confluent.io/cloud/current/connectors/cc-snowflake-sink.html)
     ```properties
       connector.class=com.snowflake.kafka.connector.SnowflakeSinkConnector
       tasks.max=8
       topics=sales-data
       snowflake.topic2table.map=sales-data:sales_data
-      buffer.count.records=10000
-      buffer.flush.time=60
-      buffer.size.bytes=5000000
+      buffer.count.records=10000 # Records are cached in a buffer (per partition) before they are flushed to Snowflake
+      buffer.flush.time=60  # Number of seconds between buffer flushes
+      buffer.size.bytes=5000000  # Kafka records are cached in a buffer (per partition) before being written to Snowflake as data files
       snowflake.url.name=xkshnvm-xz97051.snowflakecomputing.com
       snowflake.user.name=pjaiswal
       snowflake.private.key=<<private_key>>
