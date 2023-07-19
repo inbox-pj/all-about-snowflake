@@ -9,7 +9,7 @@
     > openssl genrsa -out rsa_key.pem 2048
   - Create a public key referencing the above private key
     > openssl rsa -in rsa_key.pem -pubout -out rsa_key.pub
-  - Create and Update private key inside ```SF_connect.properties``` as ```snowflake.private.key```  (Ref: https://docs.confluent.io/cloud/current/connectors/cc-snowflake-sink.html)
+  - Create and Update private key inside ```SF_connect.properties``` as ```snowflake.private.key``` [Snowflake Connector for Kafka](https://docs.snowflake.com/en/user-guide/kafka-connector)
     ```properties
       connector.class=com.snowflake.kafka.connector.SnowflakeSinkConnector
       tasks.max=8
