@@ -44,9 +44,11 @@ ALTER TABLE OUR_FIRST_DB.public.customers
 RENAME TO OUR_FIRST_DB.public.customers_wrong;
 
 ```
-## Create/Alter table with DATA_RETENTION_TIME_IN_DAYS
+## Create/Alter table/DATABASE with DATA_RETENTION_TIME_IN_DAYS
 
 ```sql
+
+ALTER DATABASE OUR_FIRST_DB SET DATA_RETENTION_TIME_IN_DAYS = <x>
 
 -- x could be 0-90 days based on snowflake edition used, default to 1 day only, contribute to storage cost
 Create Table <table name> (
