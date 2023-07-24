@@ -27,6 +27,7 @@ select * from table(information_schema.materialized_view_refresh_history())
 
 
 ## DYNAMIC DATA MASKING (COLUMN LEVEL SECURITY)
+### HIPAA Privacy Rule (Health Insurance Portability and Accountability Act)
 --------------------------------------
 ```sql
 -- Set up masking policy
