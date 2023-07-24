@@ -70,6 +70,9 @@ create or replace masking policy sha2 as (val varchar) returns varchar ->
 ALTER TABLE IF EXISTS CUSTOMERS MODIFY COLUMN phone 
 SET MASKING POLICY PHONE;
 
+-- Apply Masking policy in Table defination
+CREATE or REPLACE TABLE CUSTOMERS (id int, phone varchar masking policy phone, email varchar masking policy emails, name varchar);
+
 
 -- List and describe policies
 DESC MASKING POLICY phone;
@@ -91,3 +94,36 @@ alter masking policy phone set body ->
  		else '**-**-**'
 	end;
 ```
+
+
+## ROW ACCESS SECURITY
+
+<img width="750" alt="image" src="https://github.com/inbox-pj/snowflake-all-in-one/assets/53929164/68fa281c-140c-4487-842c-86f3a3d08d2b">
+
+```sql
+
+create table patient
+(
+Name varchar,
+age integer,
+icdcode varchar,
+zip_code varchar,
+city varchar,
+provider_name varchar
+)
+
+create or replace row access policy patient_policy as (icdcode varchar) returns boolean ->
+           CASE WHEN icdcode='F70' THEN FALSE ELSE TRUE END
+;
+
+create or replace row access policy patient_policy as (icdcode varchar) returns boolean ->
+      CASE WHEN 'SYSADMIN'=current_role() THEN TRUE ELSE
+                                                    CASE WHEN icdcode='F70' THEN FALSE ELSE TRUE END
+                                                    END
+;
+
+alter table claims.pharmacy.patient add row access policy patient_policy on (icdcode);
+
+drop row access policy  governance.row_access_policy.patient_policy
+```
+
