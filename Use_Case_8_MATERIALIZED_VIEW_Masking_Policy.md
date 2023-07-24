@@ -26,7 +26,7 @@ select * from table(information_schema.materialized_view_refresh_history())
 ```
 
 
-## DYNAMIC DATA MASKING (COLUMN LEVEL SECURITY)
+## DYNAMIC DATA MASKING (COLUMN LEVEL SECURITY) - DAP (Data Access Policy)
 ### Compliance with data protection regulations: GDPR, HIPAA, or CCPA
 --------------------------------------
 ```sql
