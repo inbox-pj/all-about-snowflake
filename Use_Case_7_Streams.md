@@ -31,6 +31,11 @@ INSERT INTO Customer_Report
     C.EMPLOYEES 
     FROM Customer_Stream CS
     JOIN CUSTOMER C ON CS.ID=C.ID ;
+
+
+-- ofset check.
+
+select SYSTEM$STREAM_GET_TABLE_TIMESTAMP('Customer_Stream')
 ```
 
 
@@ -175,11 +180,93 @@ AT (timestamp => 'your-timestamp'::timestamp_tz)
 
 <img width="854" alt="image" src="https://github.com/inbox-pj/snowflake-all-in-one/assets/53929164/0a837e61-4e56-4344-87fe-c2bf0ca394ca">
 
+```sql
+-- Create integration object
+create or replace storage integration Snowflake_Obj
+type = external_stage
+storage_provider = s3
+enabled = true
+storage_aws_role_arn = 'arn:aws:iam::917077600714:role/snowflake'
+storage_allowed_locations = ('s3://snowpipe-demo2/');
+
+desc integration Snowflake_Obj;
+
+-- Create file format
+create or replace file format csv_file_format
+type = csv field_delimiter = ',' skip_header = 1 null_if = ('NULL', 'null') empty_field_as_null = true;
+
+-- Create stage
+create or replace stage snow_stage
+storage_integration = Snowflake_Obj
+url = 's3://snowpipe-demo2/'
+file_format = csv_file_format;
+
+-- Create snowflake staging table
+
+create or replace transient table parking
+(
+Summons_Number	 Number	,
+Plate_ID	Varchar	,
+Registration_State	 Varchar	,
+Plate_Type	 Varchar	,
+Issue_Date	DATE	
+);
 
 
+-- Create snowflake tables to load data for LC and NJ cities.
+create or replace transient table LC_parking_t like PARKING;
+create or replace transient table NJ_parking_t like PARKING;
+
+-- Create snowpipe to continuously load data.
+create or replace pipe demo_db.public.snowpipe auto_ingest=true as
+    copy into demo_db.public.parking
+    from @demo_db.public.snow_stage/parking_data/
+    ON_ERROR='CONTINUE'
+    file_format = (type = 'csv',error_on_column_count_mismatch=false);
+       
+show pipes; 
+show tasks;
+
+alter pipe SNOWPIPE refresh;
+
+-- Create stream object to capture changes in NY table. 
+create or replace  stream LC_parking on table demo_db.public.parking; 
+create or replace  stream NJ_parking on table demo_db.public.parking; 
+
+-- Create task to capture only LC city data
+CREATE OR REPLACE TASK DEMO_DB.PUBLIC.LC_parking
+  WAREHOUSE = compute_wh
+  SCHEDULE = '1 minute'
+WHEN
+  SYSTEM$STREAM_HAS_DATA('LC_parking')
+AS
+INSERT INTO snowpipe.public.LC_parking_t
+SELECT * FROM DEMO_DB.PUBLIC.parking WHERE Registration_State='LC';
+
+ALTER TASK LC_parking RESUME;
+-- Create task to capture only NJ city data
+
+CREATE OR REPLACE TASK DEMO_DB.PUBLIC.NJ_parking
+  WAREHOUSE = compute_wh
+  SCHEDULE = '1 minute'
+WHEN
+  SYSTEM$STREAM_HAS_DATA('NJ_parking')
+AS
+INSERT INTO demo_db.public.NJ_parking_t
+SELECT * FROM parking WHERE Registration_State='NJ';
+
+ALTER TASK NJ_PARKING RESUME;
+
+CREATE OR REPLACE TASK DEMO_DB.PUBLIC.REFRESH_PIPE
+  WAREHOUSE = compute_wh
+  SCHEDULE = '1 minute'
+AS
+alter pipe demo_db.public.SNOWPIPE refresh;
+
+ALTER TASK DEMO_DB.PUBLIC.REFRESH_PIPE RESUME;
 
 
-
+```
 
 
 
