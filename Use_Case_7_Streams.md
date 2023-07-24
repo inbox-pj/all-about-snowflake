@@ -171,6 +171,9 @@ AT (timestamp => 'your-timestamp'::timestamp_tz)
 ```
 
 
+# Snowpipe-Stream-Task collaboration
+
+<img width="854" alt="image" src="https://github.com/inbox-pj/snowflake-all-in-one/assets/53929164/0a837e61-4e56-4344-87fe-c2bf0ca394ca">
 
 
 
