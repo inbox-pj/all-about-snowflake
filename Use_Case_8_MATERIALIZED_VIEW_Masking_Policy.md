@@ -121,7 +121,18 @@ create or replace row access policy patient_policy as (icdcode varchar) returns 
 ;
 
 alter table claims.pharmacy.patient add row access policy patient_policy on (icdcode);
+alter table claims.pharmacy.patient add row access policy governance.row_access_policy.patient_policy on (icdcode,zip_code);
 
-drop row access policy  governance.row_access_policy.patient_policy
+drop row access policy  governance.row_access_policy.patient_policy;
+
+select *
+from table(information_schema.policy_references(policy_name => 'patient_policy'));
+
+
+select *
+  from table(information_schema.policy_references(ref_entity_name => 'claims.pharmacy.patient', ref_entity_domain => 'table'));
+
+
+
 ```
 
