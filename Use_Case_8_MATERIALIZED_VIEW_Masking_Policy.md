@@ -98,8 +98,6 @@ alter masking policy phone set body ->
 
 ## ROW ACCESS SECURITY
 
-<img width="750" alt="image" src="https://github.com/inbox-pj/snowflake-all-in-one/assets/53929164/68fa281c-140c-4487-842c-86f3a3d08d2b">
-
 ```sql
 
 create table patient
