@@ -138,7 +138,7 @@ from table(information_schema.policy_references(policy_name => 'patient_policy')
 select *
   from table(information_schema.policy_references(ref_entity_name => 'claims.pharmacy.patient', ref_entity_domain => 'table'));
 
-
+select * from SNOWFLAKE.row_access_polity;
 
 ```
 
