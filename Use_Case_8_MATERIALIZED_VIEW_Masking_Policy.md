@@ -120,6 +120,12 @@ create or replace row access policy patient_policy as (icdcode varchar) returns 
                                                     END
 ;
 
+create or replace row access policy patient_policy as (icdcode varchar) returns boolean ->
+   exists(
+      select * from table x where a == b	-- if returns row, policy is valid
+    )
+;
+
 alter table claims.pharmacy.patient add row access policy patient_policy on (icdcode);
 alter table claims.pharmacy.patient add row access policy governance.row_access_policy.patient_policy on (icdcode,zip_code);
 
